@@ -58,7 +58,7 @@ dfrq = frq_max-frq_min
 nfrq = 100
 
 ## needs to be large enough to resolve skin depth of Au sphere                                                                                         
-resolution = 20
+resolution = 80
 
 dpml = 0.5*wvl_max
 dair = 0.5*wvl_max
@@ -137,13 +137,7 @@ sim.load_minus_flux_data(box_y2, box_y2_data)
 sim.load_minus_flux_data(box_z1, box_z1_data)
 sim.load_minus_flux_data(box_z2, box_z2_data)
 
-animate = mp.Animate2D(sim,
-                       fields=mp.Ez,
-                       field_parameters={'alpha':0.8, 'cmap':'RdBu', 'interpolation':'none'},
-                       boundary_parameters={'hatch':'o', 'linewidth':1.5, 'facecolor':'y', 'edgecolor':'b', 'alpha':0.3},
-                       output_plane=mp.Volume(center=mp.Vector3(0,0,0),size=mp.Vector3(s, s, 0)))
-
-sim.run(mp.at_every(1,animate), until_after_sources=100)
+sim.run(until_after_sources=100)
 
 box_x1_flux = mp.get_fluxes(box_x1)
 box_x2_flux = mp.get_fluxes(box_x2)
@@ -161,7 +155,6 @@ trace = lambda t: (t[0][0]+t[1][1]+t[2][2])/3
 scatt_eff_theory = [ps.MieQ(np.sqrt(trace(Au.epsilon(f))),1000/f,2*r*100,asDict=True)['Qsca'] for f in freqs]
 
 if mp.am_master():
-    animate.to_gif(fps=1E9, filename="MieScattering_Example.gif")
     plt.figure(dpi=150)
     plt.loglog(2*np.pi*r*np.asarray(freqs),scatt_eff_meep,'bo-',label='Meep')
     plt.loglog(2*np.pi*r*np.asarray(freqs),scatt_eff_theory,'ro-',label='theory')
@@ -169,7 +162,7 @@ if mp.am_master():
     plt.xlabel('(sphere circumference)/wavelength, 2πr/λ')
     plt.ylabel('scattering efficiency, σ/πr$^{2}$')
     plt.legend(loc='upper left')
-    plt.title('Mie Scattering of a Au Sphere')
+    plt.title('Mie Scattering of a Au Sphere R 50nm')
     plt.tight_layout()
-    plt.savefig("mie_scattering_Au_3D.png")
-    np.savez('scatt_eff_res{}.npz'.format(resolution),scatt_eff_meep=scatt_eff_meep)
+    plt.savefig("scattering_efficiencies/mie_scattering_Au_3D.png")
+    np.savez('npz/scatt_eff_res_au_3D_{}.npz'.format(resolution),scatt_eff_meep=scatt_eff_meep)

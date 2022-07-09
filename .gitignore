@@ -3,3 +3,5 @@
 /sim_plots
 /npz
 *.out
+.env
+/__pycache__

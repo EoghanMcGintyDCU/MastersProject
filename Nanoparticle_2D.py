@@ -5,7 +5,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import PyMieScatt as ps
 import sys
-from material import Au_JC_visible
+from material import Au_JC_visible, Au
 
 um_scale = 0.1
 
