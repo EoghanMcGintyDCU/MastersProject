@@ -21,9 +21,9 @@ g = args.gap / 100      # distance between spheres
 
 save_folder = args.savefolder
 
-if mp.am_master:
-        if not os.path.isdir(save_folder):
-                os.makedirs(save_folder)
+if not os.path.isdir(save_folder):
+        print('save folder does not exist')
+        exit() 
 
 material = Au
 if args.material in material_map:
@@ -57,7 +57,7 @@ vol = mp.Volume(center=mp.Vector3(0,0), size=mp.Vector3(2*(r+0.5*dpad),2*(0.5*g+
 sources = [mp.Source(mp.GaussianSource(frq_cen,fwidth=dfrq,is_integrated=True),
                      center=mp.Vector3(-0.5*sx+dpml),
                      size=mp.Vector3(0,sy,0),
-                     component=mp.Hz)]
+                     component=mp.Ex)]
 
 # overlay for images
 geometry =  [mp.Sphere(material=mp.Medium(epsilon=5),
