@@ -1,9 +1,9 @@
 import meep as mp
 
-# silver (Ag)
 um_scale = 0.1 # 100nm
 eV_um_scale = um_scale/1.23984193
 
+# gold (Au)
 metal_range_Au = mp.FreqRange(min=um_scale/6.1992, max=um_scale/.24797)
 
 Au_plasma_frq = 9.03*eV_um_scale
@@ -58,7 +58,6 @@ Au_JC_visible_susc = [mp.DrudeSusceptibility(frequency=Au_JC_visible_frq0, gamma
 
 Au_JC_visible = mp.Medium(epsilon=6.1599, E_susceptibilities=Au_JC_visible_susc)
 
-
 metal_range_Ag = mp.FreqRange(min=um_scale/12.398, max=um_scale/.24797)
 
 # silver (Ag)
@@ -98,6 +97,22 @@ Ag_susc = [mp.DrudeSusceptibility(frequency=Ag_frq0, gamma=Ag_gam0, sigma=Ag_sig
 Ag = mp.Medium(epsilon=1.0, E_susceptibilities=Ag_susc, valid_freq_range=metal_range_Ag)
 Ag.from_um_factor = um_scale   
 
+metal_visible_range = mp.FreqRange(min=um_scale/0.8, max=um_scale/0.4)
+
+Ag_visible_frq0 = 1/(0.142050162130618*um_scale)
+Ag_visible_gam0 = 1/(18.0357292925015*um_scale)
+Ag_visible_sig0 = 1
+
+Ag_visible_frq1 = 1/(0.115692151792108*um_scale)
+Ag_visible_gam1 = 1/(0.257794324096575*um_scale)
+Ag_visible_sig1 = 3.74465275944019
+
+Ag_visible_susc = [mp.DrudeSusceptibility(frequency=Ag_visible_frq0, gamma=Ag_visible_gam0, sigma=Ag_visible_sig0),
+                   mp.LorentzianSusceptibility(frequency=Ag_visible_frq1, gamma=Ag_visible_gam1, sigma=Ag_visible_sig1)]
+
+Ag_visible = mp.Medium(epsilon=0.0067526, E_susceptibilities=Ag_visible_susc, valid_freq_range=metal_visible_range)
+
+#SiO2
 SiO2_range = mp.FreqRange(min=um_scale/1.77, max=um_scale/0.25)
 
 SiO2_frq1 = 1/(0.103320160833333*um_scale)
@@ -108,3 +123,56 @@ SiO2_susc = [mp.LorentzianSusceptibility(frequency=SiO2_frq1, gamma=SiO2_gam1, s
 
 SiO2 = mp.Medium(epsilon=1.0, E_susceptibilities=SiO2_susc, valid_freq_range=SiO2_range)
 SiO2.from_um_factor = um_scale   
+
+#BK7
+BK7_range = mp.FreqRange(min=um_scale/2.5, max=um_scale/0.3)
+
+BK7_frq1 = 1/(0.07746417668832478*um_scale)
+BK7_gam1 = 0
+BK7_sig1 = 1.03961212
+BK7_frq2 = 1/(0.14148467902921502*um_scale)
+BK7_gam2 = 0
+BK7_sig2 = 0.231792344
+BK7_frq3 = 1/(10.176475470417055*um_scale)
+BK7_gam3 = 0
+BK7_sig3 = 1.01046945
+
+BK7_susc = [mp.LorentzianSusceptibility(frequency=BK7_frq1, gamma=BK7_gam1, sigma=BK7_sig1),
+            mp.LorentzianSusceptibility(frequency=BK7_frq2, gamma=BK7_gam2, sigma=BK7_sig2),
+            mp.LorentzianSusceptibility(frequency=BK7_frq3, gamma=BK7_gam3, sigma=BK7_sig3)]
+
+BK7 = mp.Medium(epsilon=1.0, E_susceptibilities=BK7_susc, valid_freq_range=BK7_range)
+BK7.from_um_factor = um_scale   
+
+metal_range = mp.FreqRange(min=um_scale/12.398, max=um_scale/.20664)
+
+#Cu
+Cu_plasma_frq = 10.83*eV_um_scale
+Cu_f0 = 0.575
+Cu_frq0 = 1e-10
+Cu_gam0 = 0.030*eV_um_scale
+Cu_sig0 = Cu_f0*Cu_plasma_frq**2/Cu_frq0**2
+Cu_f1 = 0.061
+Cu_frq1 = 0.291*eV_um_scale      # 4.261 μm
+Cu_gam1 = 0.378*eV_um_scale
+Cu_sig1 = Cu_f1*Cu_plasma_frq**2/Cu_frq1**2
+Cu_f2 = 0.104
+Cu_frq2 = 2.957*eV_um_scale      # 0.419 μm
+Cu_gam2 = 1.056*eV_um_scale
+Cu_sig2 = Cu_f2*Cu_plasma_frq**2/Cu_frq2**2
+Cu_f3 = 0.723
+Cu_frq3 = 5.300*eV_um_scale      # 0.234 μm
+Cu_gam3 = 3.213*eV_um_scale
+Cu_sig3 = Cu_f3*Cu_plasma_frq**2/Cu_frq3**2
+Cu_f4 = 0.638
+Cu_frq4 = 11.18*eV_um_scale      # 0.111 μm
+Cu_gam4 = 4.305*eV_um_scale
+Cu_sig4 = Cu_f4*Cu_plasma_frq**2/Cu_frq4**2
+
+Cu_susc = [mp.DrudeSusceptibility(frequency=Cu_frq0, gamma=Cu_gam0, sigma=Cu_sig0),
+           mp.LorentzianSusceptibility(frequency=Cu_frq1, gamma=Cu_gam1, sigma=Cu_sig1),
+           mp.LorentzianSusceptibility(frequency=Cu_frq2, gamma=Cu_gam2, sigma=Cu_sig2),
+           mp.LorentzianSusceptibility(frequency=Cu_frq3, gamma=Cu_gam3, sigma=Cu_sig3),
+           mp.LorentzianSusceptibility(frequency=Cu_frq4, gamma=Cu_gam4, sigma=Cu_sig4)]
+
+Cu = mp.Medium(epsilon=1.0, E_susceptibilities=Cu_susc, valid_freq_range=metal_range)

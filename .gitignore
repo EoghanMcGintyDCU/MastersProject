@@ -1,7 +1,8 @@
-/gifs
-/scattering_efficiencies
-/sim_plots
-/npz
 *.out
 .env
 /__pycache__
+/misc
+/plasmon-meep-master
+/.vscode
+/materials
+/dielectric.npz

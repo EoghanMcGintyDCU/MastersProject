@@ -1,4 +1,6 @@
 /README.md
-/gifs
-/scattering_efficiencies
 /__pycache__
+/misc
+/plasmon-meep-master
+/.vscode
+/materials
