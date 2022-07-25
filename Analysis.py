@@ -62,14 +62,14 @@ enhancement = power[:, :, :] / ref_power[:, :, :]
 
 hotspot_enhancement = np.zeros_like(freqs)
 
-overlay_data = np.load("overlay.npz")
+overlay_data = np.load("{}/overlay.npz".format(save_folder))
 overlay_data = overlay_data['overlay_data']
 
 # skip the nonphysical low-frequncy part of spectra
 skip_freq = 5
 
 for i in range(flen):
-    hotspot_enhancement[i] = np.percentile(enhancement[:,:,i], 99)
+    hotspot_enhancement[i] = np.max(enhancement[:,:,i])
 
 plt.plot(100 / freqs[skip_freq:], hotspot_enhancement[skip_freq:])
 plt.xlabel("Wavelength, nm")

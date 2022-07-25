@@ -14,7 +14,7 @@ frq_cen = 0.5*(frq_min+frq_max)
 dfrq = frq_max-frq_min
 nfrq = 100
                                                                                   
-resolution = 15
+resolution = 50
 
 def GetShape(r,g,shape,material):
 
@@ -96,7 +96,7 @@ pml_layers = [mp.PML(thickness=dpml)]
 
 sx = 2*(dpml+dair+r)
 sy = 2*(dpml+dair+2*r+g)
-cell_size = mp.Vector3(sx,sy,sx)
+cell_size = mp.Vector3(sx,sy,0)
 
 dpad = 0.5*dair
 vol = mp.Volume(center=mp.Vector3(0,0), size=mp.Vector3(2*(r+0.5*dpad),2*(0.5*g+2*r+0.5*dpad)))
@@ -113,11 +113,9 @@ sim.run(until=1)
 
 overlay_data = sim.get_array(vol=vol, component=mp.Dielectric)
 overlay_data = overlay_data.transpose()
-np.savez("overlay.npz",overlay_data=overlay_data)
+np.savez("{}/overlay.npz".format(save_folder),overlay_data=overlay_data)
 
 sim.reset_meep()
-
-## normalization run i.e., without nanoparticles
 
 # is_integrated=True necessary for any planewave source extending into PML                                                                                     
 sources = [mp.Source(mp.GaussianSource(frq_cen,fwidth=dfrq,is_integrated=True),
@@ -127,6 +125,7 @@ sources = [mp.Source(mp.GaussianSource(frq_cen,fwidth=dfrq,is_integrated=True),
 
 empty_geometry =   [] 
 
+## normalization run i.e., without nanoparticles
 sim = mp.Simulation(split_chunks_evenly=False,
                     resolution=resolution,
                     cell_size=cell_size,
