@@ -5,7 +5,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import PyMieScatt as ps
 import sys, os
-from material import Au_JC_visible, Au
+from material import Au
 
 um_scale = 0.1
 
@@ -21,7 +21,7 @@ dfrq = frq_max-frq_min
 nfrq = 100
 
 ## needs to be large enough to resolve skin depth of Au sphere                                                                                         
-resolution = 150
+resolution = 20
 
 dpml = 0.5*wvl_max
 dair = 0.5*wvl_max
@@ -62,7 +62,7 @@ box_x1_flux0 = mp.get_fluxes(box_x1)
 
 sim.reset_meep()
 
-geometry = [mp.Sphere(material=Au,
+geometry = [mp.Sphere(material=mp.Medium(epsilon=6.9),
                       center=mp.Vector3(),
                       radius=r)]
 

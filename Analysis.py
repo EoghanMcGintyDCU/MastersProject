@@ -5,22 +5,19 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import argparse
 
-parser = argparse.ArgumentParser(
-    description="Perform Enhancement Analysis on 2 Nanoparticles FDTD output")
-parser.add_argument("savefolder", type=str, help="Folder to read results from", default ="./")
-
-args = parser.parse_args()
-
-save_folder = args.savefolder
-
-wvl_min = 3
+wvl_min = 2
 wvl_max = 10
 
 frq_min = 1/wvl_max
 frq_max = 1/wvl_min
-frq_cen = 0.5*(frq_min+frq_max) 
-dfrq = frq_max-frq_min
 nfrq = 100
+
+parser = argparse.ArgumentParser(description="Perform Enhancement Analysis on 2 Nanoparticles FDTD output")
+parser.add_argument("-f", "--folder", type=str, help="Folder to read results from", default="./")
+
+args = parser.parse_args()
+
+save_folder = args.folder
 
 norm_data = h5py.File("{}/norm.h5".format(save_folder), "r")
 keys = list(norm_data.keys())
@@ -28,19 +25,19 @@ norm_data = [norm_data[key] for key in keys]  # read all datasets in the hf5 fil
 print("Components: {}".format(keys))
 print("Data {}".format(norm_data[0].shape))
 
-l = norm_data[0].shape[2]  # length of temporal dimension
-flen = l // 2  # length of data in frequency
+l = norm_data[0].shape[2]           # length of temporal dimension
+flen = l // 2                       # length of data in frequency
 print("Temporal length of data {}, length of freq domain {}".format(l, flen))
 
 print("Freq max {}".format(frq_max))
-freqs = np.linspace(frq_min, frq_max, nfrq) # change linspace to arange 0...f_nyq
+freqs = np.linspace(frq_min, frq_max, nfrq)     # change linspace to arange 0...f_nyq
 
 data = h5py.File("{}/data.h5".format(save_folder), "r")
-data = [data[key] for key in keys]  # read all datasets in the hf5 file
+data = [data[key] for key in keys]              # read all datasets in the hf5 file
 print("Components: {}".format(keys))
 print("Data {}".format(data[0].shape))
 
-def get_power(time_data):
+def GetPower(time_data):
     # convert chunk of data from time domain to
     # squared frequency domain (power spectrum)    
     fdata = np.fft.fft(time_data, flen * 2, axis=-1) / l
@@ -53,20 +50,20 @@ power = np.zeros((sh[0], sh[1], flen))
 # X, Y, Z
 for j in data:
     print(j.name)
-    power += get_power(j[:])
+    power += GetPower(j[:])
 
 ref_power = np.zeros((sh[0], sh[1], flen))
 # X, Y, Z
 for j in norm_data:
     print(j.name)
-    ref_power += get_power(j[:])
+    ref_power += GetPower(j[:])
 
 enhancement = power[:, :, :] / ref_power[:, :, :]
 
 hotspot_enhancement = np.zeros_like(freqs)
 
-eps_data = np.load("dielectric.npz")
-eps_data = eps_data['eps_data']
+overlay_data = np.load("overlay.npz")
+overlay_data = overlay_data['overlay_data']
 
 # skip the nonphysical low-frequncy part of spectra
 skip_freq = 5
@@ -85,10 +82,9 @@ max_f = freqs[max_enhancement]
 max_wv = 100/max_f
 plt.figure()
 plt.title("Enhancement {}nm".format(max_wv))
-plt.imshow(eps_data, interpolation='spline36', cmap='binary')
+plt.imshow(overlay_data, interpolation='spline36', cmap='binary')
 plt.imshow(enhancement[:,:,max_enhancement].transpose(), interpolation='spline36', cmap='plasma', alpha=0.9)
 plt.axis('off')
 plt.colorbar()
 plt.savefig("{}/MaxEnhancement.png".format(save_folder),dpi=150,bbox_inches='tight')
 plt.close()
-

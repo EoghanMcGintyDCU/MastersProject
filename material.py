@@ -1,5 +1,7 @@
 import meep as mp
 
+# Definitions of materials from meep.materials library with scaling factor set to 100nm
+
 um_scale = 0.1 # 100nm
 eV_um_scale = um_scale/1.23984193
 
