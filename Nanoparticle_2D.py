@@ -21,7 +21,7 @@ dfrq = frq_max-frq_min
 nfrq = 100
 
 ## needs to be large enough to resolve skin depth of Au sphere                                                                                         
-resolution = 20
+resolution = 150
 
 dpml = 0.5*wvl_max
 dair = 0.5*wvl_max
@@ -35,7 +35,7 @@ cell_size = mp.Vector3(s,s,0)
 sources = [mp.Source(mp.GaussianSource(frq_cen,fwidth=dfrq,is_integrated=True),
                      center=mp.Vector3(-0.5*s+dpml),
                      size=mp.Vector3(0,s,0),
-                     component=mp.Ez)]
+                     component=mp.Ey)]
 
 sim = mp.Simulation(split_chunks_evenly=False,
                     resolution=resolution,
@@ -44,7 +44,7 @@ sim = mp.Simulation(split_chunks_evenly=False,
                     sources=sources,
                     k_point=mp.Vector3())
 
-dpad = 0.01*dair
+dpad = 0.1*dair
 box_x1 = sim.add_flux(frq_cen, dfrq, nfrq, mp.FluxRegion(center=mp.Vector3(x=-r-dpad),size=mp.Vector3(0,2*(r+dpad),0)))
 box_x2 = sim.add_flux(frq_cen, dfrq, nfrq, mp.FluxRegion(center=mp.Vector3(x=+r+dpad),size=mp.Vector3(0,2*(r+dpad),0)))
 box_y1 = sim.add_flux(frq_cen, dfrq, nfrq, mp.FluxRegion(center=mp.Vector3(y=-r-dpad),size=mp.Vector3(2*(r+dpad),0,0)))
@@ -62,7 +62,7 @@ box_x1_flux0 = mp.get_fluxes(box_x1)
 
 sim.reset_meep()
 
-geometry = [mp.Sphere(material=mp.Medium(epsilon=6.9),
+geometry = [mp.Sphere(material=Au,
                       center=mp.Vector3(),
                       radius=r)]
 
@@ -84,9 +84,6 @@ sim.load_minus_flux_data(box_x1, box_x1_data)
 sim.load_minus_flux_data(box_x2, box_x2_data)
 sim.load_minus_flux_data(box_y1, box_y1_data)
 sim.load_minus_flux_data(box_y2, box_y2_data)
-
-sim.plot2D()
-plt.savefig("geom.png")
 
 sim.run(until_after_sources=100)
 
