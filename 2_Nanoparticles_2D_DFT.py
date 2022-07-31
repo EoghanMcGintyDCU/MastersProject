@@ -17,7 +17,7 @@ frq_cen = 0.5*(frq_min+frq_max)
 dfrq = frq_max-frq_min
 nfrq = 100
                                                                                   
-resolution = 50
+resolution = 80
 
 def GetShape(r,g,shape,material):
 
@@ -60,7 +60,7 @@ parser.add_argument("-f", "--folder", type=str, help="Folder to save results", d
 parser.add_argument("-r", "--radius", type=float, help="Radius of nanoparticles (nm)", default=50)
 parser.add_argument("-g", "--gap", type=float, help="Gap size between particles (nm)", default=5)
 parser.add_argument("-i", "--index", type=float, help="Refractive index of surrounding medium", default=1)
-parser.add_argument("-c", "--component", type=str, help="Source field component i.e., Ey, Hz etc.", default="Ey")
+parser.add_argument("-c", "--component", type=str, help="Source field component i.e., Ex, Hz etc.", default="Hz")
 parser.add_argument("-s", "--shape", type=str, help="Shape of nanoparticle (sphere, rod)", default="sphere")
 
 parse_args = parser.parse_args()
@@ -83,12 +83,12 @@ g = parse_args.gap / 100      # distance between shape
 
 index = parse_args.index
 
-component = mp.Ey
-if parse_args.component != "Ey" and parse_args.component in component_map:
+component = mp.Hz
+if parse_args.component != "Hz" and parse_args.component in component_map:
         component = component_map[parse_args.component]
         print("Component: {}".format(parse_args.component))
 else:
-        print('Component: Defaulting to Ey')
+        print('Component: Defaulting to Hz')
 
 geometry = GetShape(r,g,parse_args.shape,material)
 
@@ -104,6 +104,8 @@ cell_size = mp.Vector3(sx,sy,0)
 dpadx = 1.1*r
 dpady = r
 vol = mp.Volume(center=mp.Vector3(0,0), size=mp.Vector3(2*(r+dpadx),2*(0.5*g+2*r+dpady)))
+
+symmetries = [mp.Mirror(mp.Y,phase=-1)]
 
 # is_integrated=True necessary for any planewave source extending into PML                                                                                     
 sources = [mp.Source(mp.GaussianSource(frq_cen,fwidth=dfrq,is_integrated=True),
@@ -143,14 +145,15 @@ sim = mp.Simulation(split_chunks_evenly=False,
                     sources=sources,
                     k_point=mp.Vector3(),
                     filename_prefix="",
-                    default_material=mp.Medium(index=index),         
+                    default_material=mp.Medium(index=index),
+                    symmetries=symmetries,         
                     geometry=empty_geometry)
 
 dft_norm = sim.add_dft_fields([mp.Ex,mp.Ey,mp.Ez], frq_cen, dfrq, nfrq, where=vol)
 
 sim.run(until_after_sources=100)
 
-dft_shape = sim.get_dft_array(dft_norm, component, 0).shape
+dft_shape = sim.get_dft_array(dft_norm, mp.Ey, 0).shape
 dft_e_fields_norm = np.zeros((dft_shape[0], dft_shape[1], nfrq),dtype=np.complex128)
 for i in range(nfrq):
         dft_e_fields_norm[:,:,i] += sim.get_dft_array(dft_norm, mp.Ex, i)        
@@ -168,6 +171,7 @@ sim = mp.Simulation(split_chunks_evenly=False,
                     sources=sources,
                     filename_prefix="",
                     default_material=mp.Medium(index=index),
+                    symmetries=symmetries,
                     geometry=geometry)
 
 dft = sim.add_dft_fields([mp.Ex,mp.Ey,mp.Ez], frq_cen, dfrq, nfrq, where=vol)
