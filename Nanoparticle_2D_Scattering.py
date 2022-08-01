@@ -115,4 +115,4 @@ if mp.am_master():
     plt.legend(loc='upper left')
     plt.title('Mie Scattering of Au Sphere')
     plt.tight_layout()
-    plt.savefig("mie_scattering_Au_R{radius}nm.png".format(dir=dir,radius=r*100))
+    plt.savefig("mie_scattering_Au_R{radius}nm.png".format(radius=r*100))
