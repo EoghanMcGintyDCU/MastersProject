@@ -192,7 +192,7 @@ power = np.square(dft_e_fields)
 
 enhancement = power / norm_power
 
-freqs = freqs = np.linspace(frq_min, frq_max, nfrq) 
+freqs = np.linspace(frq_min, frq_max, nfrq) 
 
 hotspot_enhancement = np.zeros_like(freqs)
 
