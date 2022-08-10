@@ -39,6 +39,17 @@ def GetShape(r,g,shape,material):
                                         radius=r,
                                         height=4*r,
                                         axis=mp.Vector3(1,0,0))
+                                ],
+                "cone" :       [mp.Cone(material=material,
+                                        center=mp.Vector3(0,r+0.5*g,0),
+                                        radius=r,
+                                        height=2*r,
+                                        axis=mp.Vector3(0,-1,0)),
+                                mp.Cone(material=material,
+                                        center=mp.Vector3(0,-r-0.5*g,0),
+                                        radius=r,
+                                        height=2*r,
+                                        axis=mp.Vector3(0,1,0))
                                 ]
                 }
         
